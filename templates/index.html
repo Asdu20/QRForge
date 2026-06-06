@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QRForge</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Segoe UI',sans-serif;
+}
+
+body{
+background:linear-gradient(135deg,#020617,#0f172a,#1e293b);
+min-height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+padding:20px;
+}
+
+.container{
+width:600px;
+max-width:95%;
+padding:35px;
+background:rgba(255,255,255,0.08);
+backdrop-filter:blur(20px);
+border:1px solid rgba(255,255,255,0.15);
+border-radius:25px;
+box-shadow:0 10px 40px rgba(0,0,0,.4);
+color:white;
+text-align:center;
+}
+
+.logo{
+font-size:45px;
+margin-bottom:10px;
+}
+
+h1{
+font-size:38px;
+margin-bottom:8px;
+}
+
+.subtitle{
+color:#94a3b8;
+margin-bottom:25px;
+}
+
+input[type="text"]{
+width:100%;
+padding:15px;
+border-radius:14px;
+border:none;
+outline:none;
+font-size:16px;
+background:rgba(255,255,255,.1);
+color:white;
+margin-bottom:15px;
+}
+
+input[type="text"]::placeholder{
+color:#cbd5e1;
+}
+
+label{
+display:block;
+text-align:left;
+margin-bottom:8px;
+margin-top:12px;
+color:#e2e8f0;
+}
+
+select{
+width:100%;
+padding:14px;
+border:none;
+border-radius:12px;
+font-size:16px;
+background:rgba(255,255,255,.1);
+color:white;
+margin-bottom:15px;
+}
+
+input[type="file"]{
+width:100%;
+padding:12px;
+border-radius:12px;
+border:2px dashed rgba(255,255,255,.2);
+background:rgba(255,255,255,.05);
+color:#cbd5e1;
+margin-bottom:15px;
+}
+
+button{
+width:100%;
+padding:15px;
+border:none;
+border-radius:14px;
+font-size:17px;
+font-weight:bold;
+cursor:pointer;
+color:white;
+background:linear-gradient(135deg,#3b82f6,#8b5cf6);
+transition:.3s;
+}
+
+button:hover{
+transform:translateY(-2px);
+}
+
+.features{
+display:flex;
+gap:10px;
+margin-top:20px;
+}
+
+.feature-card{
+flex:1;
+padding:14px;
+border-radius:14px;
+background:rgba(255,255,255,.08);
+border:1px solid rgba(255,255,255,.15);
+cursor:pointer;
+transition:.3s;
+}
+
+.feature-card:hover{
+transform:translateY(-3px);
+}
+
+.active{
+background:linear-gradient(135deg,#3b82f6,#8b5cf6);
+}
+
+.qr-section{
+margin-top:30px;
+}
+
+.qr-section img{
+width:280px;
+background:white;
+padding:15px;
+border-radius:20px;
+box-shadow:0 15px 30px rgba(0,0,0,.35);
+}
+
+.download-btn{
+display:inline-block;
+margin-top:20px;
+padding:14px 22px;
+border-radius:12px;
+text-decoration:none;
+font-weight:bold;
+background:linear-gradient(135deg,#10b981,#22c55e);
+color:white;
+}
+
+.footer{
+margin-top:30px;
+font-size:13px;
+color:#94a3b8;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="logo">⚡</div>
+
+<h1>QRForge</h1>
+
+<p class="subtitle">
+Create Custom Branded QR Codes
+</p>
+
+<form method="POST" enctype="multipart/form-data">
+
+<input
+type="hidden"
+id="qrType"
+name="qr_type"
+value="url">
+
+<input
+type="text"
+id="dataInput"
+name="data"
+placeholder="Enter Website URL"
+required>
+
+<label>Select QR Color</label>
+
+<select name="qr_color">
+<option value="#000000">⚫ Black</option>
+<option value="#ff0000">🔴 Red</option>
+<option value="#2563eb">🔵 Blue</option>
+<option value="#16a34a">🟢 Green</option>
+<option value="#8b5cf6">🟣 Purple</option>
+<option value="#f97316">🟠 Orange</option>
+</select>
+
+<label>Upload Logo (Optional)</label>
+
+<input
+type="file"
+name="logo"
+accept=".png,.jpg,.jpeg">
+
+<button type="submit">
+Generate QR Code
+</button>
+
+</form>
+
+<div class="features">
+
+<div class="feature-card active"
+id="urlBtn"
+onclick="setType('url')">
+🌐 Website
+</div>
+
+<div class="feature-card"
+id="textBtn"
+onclick="setType('text')">
+📝 Text
+</div>
+
+<div class="feature-card"
+id="emailBtn"
+onclick="setType('email')">
+📧 Email
+</div>
+
+</div>
+
+{% if qr_file %}
+
+<div class="qr-section">
+
+<h3>Your QR Code</h3>
+
+<img src="{{ url_for('static', filename='qr_codes/' + qr_file) }}">
+
+<br>
+
+<a
+class="download-btn"
+href="{{ url_for('static', filename='qr_codes/' + qr_file) }}"
+download>
+⬇ Download QR </a>
+
+</div>
+
+{% endif %}
+
+<div class="footer">
+Made by Mohd Asdaf Ansari 🚀
+</div>
+
+</div>
+
+<script>
+
+function setType(type){
+
+document.getElementById("urlBtn").classList.remove("active");
+document.getElementById("textBtn").classList.remove("active");
+document.getElementById("emailBtn").classList.remove("active");
+
+const input=document.getElementById("dataInput");
+
+if(type==="url"){
+document.getElementById("urlBtn").classList.add("active");
+input.placeholder="Enter Website URL";
+}
+
+if(type==="text"){
+document.getElementById("textBtn").classList.add("active");
+input.placeholder="Enter Plain Text";
+}
+
+if(type==="email"){
+document.getElementById("emailBtn").classList.add("active");
+input.placeholder="Enter Email Address";
+}
+
+document.getElementById("qrType").value=type;
+
+}
+
+</script>
+
+</body>
+</html>
