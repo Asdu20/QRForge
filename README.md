@@ -1,1 +1,1 @@
-# QRForge
+https://qrforge-whiq.onrender.com/
